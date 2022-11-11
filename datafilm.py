@@ -32,6 +32,12 @@ def write_trending_tv():
     ws.append(['Judul','Tayang Perdana','Skor','Sinopsis','Image'])
     wb.save('series_trending.xlsx')
 
+def write_indonesia():
+    wb = Workbook()
+    ws = wb.active
+    ws.append(['Judul','Tanggal Rilis','Skor','Sinopsis','Image'])
+    wb.save('indonesia.xlsx')
+
 
 def write_search_movie(keyword):
     wb = Workbook()
@@ -63,7 +69,7 @@ def trending_movie():
             print('Mengambil Judul: {}'.format(i['title']))
             wb = load_workbook('movie_trending.xlsx')
             ws = wb.active
-            ws.append([i['title'],i['release_date'],i['vote_average'],i['overview'],IMAGE_URL+i['poster_path']])
+            ws.append([i['original_title'],i['release_date'],i['vote_average'],i['overview'],IMAGE_URL+i['poster_path']])
             wb.save('movie_trending.xlsx')
         except:
             print('Error Pengambilan Data \"{}\", sedang Melewati, harap tunggu sebentar...\n'.format(i['title']))
@@ -83,7 +89,7 @@ def trending_tv():
             print('Mengambil Judul : {}'.format(i['name']))
             wb = load_workbook('series_trending.xlsx')
             ws = wb.active
-            ws.append([i['name'],i['first_air_date'],i['vote_average'],i['overview'],IMAGE_URL+i['poster_path']])
+            ws.append([i['original_name'],i['first_air_date'],i['vote_average'],i['overview'],IMAGE_URL+i['poster_path']])
             wb.save('series_trending.xlsx')
         except:
             print('Error Pengambilan Data \"{}\", sedang Melewati, harap tunggu sebentar...\n'.format(i['name']))
@@ -106,11 +112,11 @@ def cari_movie(query):
                 print('Mengambil Judul : {}'.format(j['title']))
                 wb = load_workbook('movie_{}.xlsx'.format(query))
                 ws = wb.active
-                data = [j['title'],j['release_date'],j['vote_average'],j['overview'],IMAGE_URL+j['poster_path']]
+                data = [j['original_title'],j['release_date'],j['vote_average'],j['overview'],IMAGE_URL+j['poster_path']]
                 ws.append(data)    
                 wb.save('movie_{}.xlsx'.format(query))
             except:
-                print('Error Pengambilan Data \"{}\", sedang Melewati, harap tunggu sebentar...\n'.format(j['title']))
+                print('Error Pengambilan Data \"{}\", sedang Melewati, harap tunggu sebentar...\n'.format(j['original_title']))
                 #time.sleep(1)
                 continue
     print('data selesai diambil\n')
@@ -130,13 +136,38 @@ def cari_series(query):
                 print('Mengambil Judul : {}'.format(j['name']))
                 wb = load_workbook('series_{}.xlsx'.format(query))
                 ws = wb.active
-                data = [j['name'],j['first_air_date'],j['vote_average'],j['overview'],IMAGE_URL+j['poster_path']]
+                data = [j['original_name'],j['first_air_date'],j['vote_average'],j['overview'],IMAGE_URL+j['poster_path']]
                 ws.append(data)   
                 wb.save('series_{}.xlsx'.format(query))
             except:
-                print('Error Pengambilan Data \"{}\", sedang Melewati, harap tunggu sebentar...\n'.format(j['name']))
+                print('Error Pengambilan Data \"{}\", sedang Melewati, harap tunggu sebentar...\n'.format(j['original_name']))
                 #time.sleep(1)
                 continue
+    print('data selesai diambil\n')
+
+def indonesia():
+    write_indonesia()
+    terminal_clear()
+    banner_show()
+    SEARCH_ENDPOINT = f'/discover/movie?api_key={API_KEY}&include_adult=false&page=1&with_original_language=id&language=id-ID'
+    response = rq.get(BASE_URL+SEARCH_ENDPOINT).json()
+    print('Mengambil {} Judul Film Indonesia\n'.format(response['total_results']))
+    for hal in range(1,response['total_pages']+1):
+        SEARCH_ENDPOINT2 = f'/discover/movie?api_key={API_KEY}&include_adult=false&page={hal}&with_original_language=id&language=id-ID'
+        responses = rq.get(BASE_URL+SEARCH_ENDPOINT2).json()
+        for j in responses['results']:
+            try:
+                print('Mengambil Judul : {}'.format(j['original_title']))
+                wb = load_workbook('indonesia.xlsx')
+                ws = wb.active
+                data = [j['original_title'],j['release_date'],j['vote_average'],j['overview'],IMAGE_URL+j['poster_path']]
+                ws.append(data)   
+                wb.save('indonesia.xlsx')
+            
+            except:
+                print('Error Pengambilan Data \"{}\", sedang Melewati, harap tunggu sebentar...\n'.format(j['original_title']))
+                #time.sleep(1)
+                pass
     print('data selesai diambil\n')
 
 def main():
@@ -148,7 +179,8 @@ def main():
     print('2. Daftar Serial TV Trending Mingguan')
     print('3. Pencarian Film')
     print('4. Pencarian Serial TV')
-    print('5. Exit')
+    print('5. Daftar Semua Film Indonesia')
+    print('6. Exit')
     print('\n')
     menu = input('Pilih Menu : ')
     if menu == '1':
@@ -162,6 +194,8 @@ def main():
         query = input('Masukkan Judul Series yang mau dicari ? ')
         cari_series(query)
     elif menu == '5':
+        indonesia()
+    elif menu == '6':
         print('Exit....')
         time.sleep(0.5)
         os._exit(os.EX_OK)
