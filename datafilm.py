@@ -11,7 +11,8 @@ API_KEY = ''
 BASE_URL = 'https://api.themoviedb.org/3'
 IMAGE_URL = 'https://image.tmdb.org/t/p/w500'
 
-sekarang = dt.date.today()
+format_sekarang = dt.datetime.now()
+sekarang = format_sekarang.strftime("%d - %B - %y")
 
 def banner_show():
     banner = Figlet(font='big')
@@ -69,7 +70,8 @@ def trending_movie():
             print('Mengambil Judul: {}'.format(i['title']))
             wb = load_workbook('movie_trending.xlsx')
             ws = wb.active
-            ws.append([i['original_title'],i['release_date'],i['vote_average'],i['overview'],IMAGE_URL+i['poster_path']])
+            data = [i['original_title'],i['release_date'],i['vote_average'],i['overview'],IMAGE_URL+i['poster_path']]
+            ws.append(data)
             wb.save('movie_trending.xlsx')
         except:
             print('Error Pengambilan Data \"{}\", sedang Melewati, harap tunggu sebentar...\n'.format(i['title']))
@@ -89,7 +91,8 @@ def trending_tv():
             print('Mengambil Judul : {}'.format(i['name']))
             wb = load_workbook('series_trending.xlsx')
             ws = wb.active
-            ws.append([i['original_name'],i['first_air_date'],i['vote_average'],i['overview'],IMAGE_URL+i['poster_path']])
+            data = [i['original_name'],i['first_air_date'],i['vote_average'],i['overview'],IMAGE_URL+i['poster_path']]
+            ws.append(data)
             wb.save('series_trending.xlsx')
         except:
             print('Error Pengambilan Data \"{}\", sedang Melewati, harap tunggu sebentar...\n'.format(i['name']))
@@ -173,7 +176,8 @@ def indonesia():
 def main():
     terminal_clear()
     banner_show()
-    print('created by : Husni\n\n')
+    print('Created by : Husni')
+    print('version    : 1.0.1\n')
     print(' Menu Utama '.center(50,'='))
     print('1. Daftar Film Trending Mingguan')
     print('2. Daftar Serial TV Trending Mingguan')
@@ -182,7 +186,7 @@ def main():
     print('5. Daftar Semua Film Indonesia')
     print('6. Exit')
     print('\n')
-    menu = input('Pilih Menu : ')
+    menu = input('Pilih Menu [1-6]: ')
     if menu == '1':
         trending_movie()
     elif menu == '2':
