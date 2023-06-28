@@ -206,7 +206,7 @@ def main():
     else:
         print('Menu Nomor {} Tidak Ditemukan\nSilahkan Coba Lagi'.format(menu))
         time.sleep(2)
-        main()
+        return main()
 
 if __name__ == '__main__':
     main()
